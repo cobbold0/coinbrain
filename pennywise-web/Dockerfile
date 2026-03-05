@@ -3,9 +3,9 @@ FROM gradle:8.5-jdk21 AS build
 
 WORKDIR /app
 
-# Copy parser-core dependency (should be in .parser-core subdirectory)
-COPY .parser-core/build.gradle.kts /app/parser-core/build.gradle.kts
-COPY .parser-core/settings.gradle.kts /app/parser-core/settings.gradle.kts
+# Copy parser-core dependency (from docker-specific Gradle files)
+COPY .parser-core/build.docker.gradle.kts /app/parser-core/build.gradle.kts
+COPY .parser-core/settings.docker.gradle.kts /app/parser-core/settings.gradle.kts
 COPY .parser-core/src /app/parser-core/src
 
 # Build and publish parser-core to local Maven
@@ -19,6 +19,7 @@ COPY build.gradle.kts settings.gradle.kts gradle.properties ./
 COPY gradle ./gradle
 COPY gradlew gradlew.bat ./
 COPY server/build.gradle.kts ./server/
+RUN sed -i 's/\r$//' gradlew && chmod +x gradlew
 
 # Copy server source code
 COPY server/src ./server/src
